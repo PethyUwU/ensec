@@ -1,56 +1,59 @@
 <?php
 class ControladorInscripcion {
 
-  static public function ctrMostrar($item=null,$valor=null){
-    return ModeloInscripcion::mdlMostrar($item,$valor);
+  static public function ctrlListar($item=null, $valor=null){
+    return ModeloInscripcion::mdlListarInscripciones("inscripcion", $item, $valor);
   }
 
-  static public function ctrCrear(){
-    if(isset($_POST["id_usuario"],$_POST["id_gestion"],$_POST["id_carrera"],$_POST["id_curso"],$_POST["id_turno"])){
-      session_start();
-      if(!isset($_SESSION["id"]) || $_SESSION["perfil"] !== "Secretaria"){
-        return ["ok"=>false,"msg"=>"No autorizado"];
+  public function ctrlCrearInscripcion(){
+    if(isset($_POST["id_usuario"], $_POST["id_gestion"], $_POST["id_curso"],
+             $_POST["id_carrera"], $_POST["id_turno"], $_POST["id_paralelo"], $_POST["fecha_inscripcion"])){
+
+      if (!isset($_SESSION)) session_start();
+      $responsable = $_POST["id_responsable"] ?? ($_SESSION["id"] ?? "");
+
+      $d = [
+        "id_usuario"        => (int)$_POST["id_usuario"],
+        "id_gestion"        => (int)$_POST["id_gestion"],
+        "id_curso"          => (int)$_POST["id_curso"],
+        "id_carrera"        => (int)$_POST["id_carrera"],
+        "id_turno"          => (int)$_POST["id_turno"],
+        "id_paralelo"       => (int)$_POST["id_paralelo"],
+        "fecha_inscripcion" => $_POST["fecha_inscripcion"],
+        "id_responsable"    => substr((string)$responsable,0,11)
+      ];
+      if(ModeloInscripcion::mdlCrear("inscripcion",$d)=="ok"){
+        echo "<script>window.location='inscripcion';</script>";
       }
-      $datos = [
-        "id_usuario"     => (int)$_POST["id_usuario"],
-        "id_gestion"     => (int)$_POST["id_gestion"],
-        "id_carrera"     => (int)$_POST["id_carrera"],
-        "id_curso"       => (int)$_POST["id_curso"],
-        "id_turno"       => (int)$_POST["id_turno"],
-        "id_responsable" => (int)$_SESSION["id"]
-      ];
-      $r = ModeloInscripcion::mdlCrear($datos);
-      return $r==="ok" ? ["ok"=>true] : ["ok"=>false,"msg"=>"No se pudo guardar"];
     }
-    return null;
   }
 
-  static public function ctrEditar(){
+  public function ctrlEditarInscripcion(){
     if(isset($_POST["id_inscripcion"])){
-      $datos = [
-        "id_inscripcion" => (int)$_POST["id_inscripcion"],
-        "id_usuario"     => (int)$_POST["id_usuario"],
-        "id_gestion"     => (int)$_POST["id_gestion"],
-        "id_carrera"     => (int)$_POST["id_carrera"],
-        "id_curso"       => (int)$_POST["id_curso"],
-        "id_turno"       => (int)$_POST["id_turno"]
+      if (!isset($_SESSION)) session_start();
+      $responsable = $_POST["id_responsable"] ?? ($_SESSION["id"] ?? "");
+      $d = [
+        "id_inscripcion"    => (int)$_POST["id_inscripcion"],
+        "id_usuario"        => (int)$_POST["id_usuario"],
+        "id_gestion"        => (int)$_POST["id_gestion"],
+        "id_curso"          => (int)$_POST["id_curso"],
+        "id_carrera"        => (int)$_POST["id_carrera"],
+        "id_turno"          => (int)$_POST["id_turno"],
+        "id_paralelo"       => (int)$_POST["id_paralelo"],
+        "fecha_inscripcion" => $_POST["fecha_inscripcion"],
+        "id_responsable"    => substr((string)$responsable,0,11)
       ];
-      $r = ModeloInscripcion::mdlEditar($datos);
-      return $r==="ok" ? ["ok"=>true] : ["ok"=>false,"msg"=>"No se pudo actualizar"];
+      if(ModeloInscripcion::mdlEditar("inscripcion",$d)=="ok"){
+        echo "<script>window.location='inscripcion';</script>";
+      }
     }
-    return null;
   }
 
-  static public function ctrEliminar(){
-    if(isset($_POST["id_inscripcion"])){
-      $r = ModeloInscripcion::mdlEliminar((int)$_POST["id_inscripcion"]);
-      return $r==="ok" ? ["ok"=>true] : ["ok"=>false,"msg"=>"No se pudo eliminar"];
+  public function ctrlBorrarInscripcion(){
+    if(isset($_GET["idInscripcion"])){
+      if(ModeloInscripcion::mdlEliminar("inscripcion",(int)$_GET["idInscripcion"])=="ok"){
+        echo "<script>window.location='inscripcion';</script>";
+      }
     }
-    return null;
-  }
-
-  static public function ctrCursosPorCarrera(){
-    if(!isset($_POST["id_carrera"])) return ["ok"=>false,"msg"=>"Falta id_carrera"];
-    return ["ok"=>true,"data"=>ModeloInscripcion::mdlCursosPorCarrera((int)$_POST["id_carrera"])];
   }
 }

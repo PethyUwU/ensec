@@ -1,97 +1,55 @@
-/* ====== DATATABLE (consume el mismo ajax) ====== */
-$('.tablaInscripcion').DataTable({
-  ajax: { url: 'ajax/inscripcion.ajax.php?accion=datatable', dataSrc: 'data' },
-  deferRender: true, retrieve: true, processing: true,
-  language: {
-    sProcessing:"Procesando...", sLengthMenu:"Mostrar _MENU_", sZeroRecords:"Sin resultados",
-    sEmptyTable:"Sin datos", sInfo:"Mostrando _START_ a _END_ de _TOTAL_",
-    sInfoEmpty:"Mostrando 0 a 0 de 0", sInfoFiltered:"(filtrado de _MAX_)", sSearch:"Buscar:",
-    oPaginate:{sFirst:"Primero",sLast:"Último",sNext:"Siguiente",sPrevious:"Anterior"}
-  }
-});
-
-/* ====== CARGA DE CATÁLOGOS (ajusta tus URLs si ya existen) ====== */
-async function cargarSelect(url, $sel, placeholder){
-  $sel.prop('disabled', true).html(`<option value="">${placeholder||'Seleccione'}</option>`);
-  const r = await fetch(url); const data = await r.json();
-  $sel.append(data.map(o=>`<option value="${o.id}">${o.nombre}</option>`)).prop('disabled', false);
+function cargarCursos(idCarrera, $destino, selectedId=""){
+  if(!idCarrera){ $destino.html('<option value="">Seleccione primero una carrera</option>'); return; }
+  $.get('ajax/inscripcion.ajax.php', { accion:'cursos', id_carrera:idCarrera }, function(res){
+    var opts = '<option value="">Seleccionar curso</option>';
+    try { res.forEach(c => opts += '<option value="'+c.id_curso+'">'+c.nombre+'</option>'); }
+    catch(e){ opts = '<option value="">(Sin cursos)</option>'; }
+    $destino.html(opts);
+    if(selectedId){ $destino.val(String(selectedId)).trigger('change'); }
+  }, 'json');
 }
 
-$('#modalAgregarInscripcion').on('shown.bs.modal', async function(){
-  await cargarSelect('api/estudiantes', $('#selEstudiante'), '-- Selecciona estudiante --');
-  await cargarSelect('api/gestiones',   $('#selGestion'),   '-- Selecciona gestión --');
-  await cargarSelect('api/carreras',    $('#selCarrera'),   '-- Selecciona carrera --');
-  await cargarSelect('api/turnos',      $('#selTurno'),     '-- Selecciona turno --');
-  $('#selCurso').html('<option value="">-- Selecciona curso --</option>').prop('disabled',true);
+function cargarParalelos(idCurso, $destino, selectedId=""){
+  if(!idCurso){ $destino.html('<option value="">Seleccione primero un curso</option>'); return; }
+  $.get('ajax/inscripcion.ajax.php', { accion:'paralelos', id_curso:idCurso }, function(res){
+    var opts = '<option value="">Seleccionar paralelo</option>';
+    try { res.forEach(p => opts += '<option value="'+p.id_paralelo+'">'+p.nombre+'</option>'); }
+    catch(e){ opts = '<option value="">(Sin paralelos)</option>'; }
+    $destino.html(opts);
+    if(selectedId){ $destino.val(String(selectedId)); }
+  }, 'json');
+}
+
+/* NUEVO */
+$('#selCarrera_nueva').on('change', function(){
+  cargarCursos($(this).val(), $('#selCurso_nuevo'));
+});
+$('#selCurso_nuevo').on('change', function(){
+  cargarParalelos($(this).val(), $('#selParalelo_nuevo'));
 });
 
-/* ====== DEPENDIENTE Carrera -> Cursos ====== */
-$("#selCarrera").change(function(){
-  const idCarrera = $(this).val();
-  const $selCurso = $("#selCurso");
-  if(!idCarrera){
-    $selCurso.prop('disabled',true).html('<option value="">-- Selecciona curso --</option>');
-    return;
+/* EDITAR */
+$('.tablas').on('click', '.btnEditarInscripcion', function(){
+  var id = $(this).attr('idInscripcion');
+  $.get('ajax/inscripcion.ajax.php', { accion:'inscripcion', id_inscripcion:id }, function(d){
+    $('#idInscripcionEditar').val(d.id_inscripcion || '');
+    $('#id_usuario_edit').val(d.id_usuario || '').trigger('change');
+    $('#id_gestion_edit').val(d.id_gestion || '').trigger('change');
+    $('#selCarrera_edit').val(d.id_carrera || '');
+    cargarCursos(d.id_carrera, $('#selCurso_edit'), d.id_curso);
+    setTimeout(function(){ cargarParalelos(d.id_curso, $('#selParalelo_edit'), d.id_paralelo); }, 150);
+    $('#id_turno_edit').val(d.id_turno || '').trigger('change');
+    if(d.fecha_inscripcion){
+      var fv = (d.fecha_inscripcion+'').replace(' ', 'T').substring(0,16);
+      $('#fecha_inscripcion_edit').val(fv);
+    }
+  }, 'json');
+});
+
+/* ELIMINAR */
+$('.tablas').on('click', '.btnEliminarInscripcion', function(){
+  var id = $(this).attr('idInscripcion');
+  if(confirm('¿Eliminar la inscripción #'+id+'?')){
+    window.location = "index.php?ruta=inscripcion&idInscripcion="+id;
   }
-  const datos = new FormData();
-  datos.append("accion","cursosPorCarrera");
-  datos.append("id_carrera", idCarrera);
-
-  $.ajax({
-    url: "ajax/inscripcion.ajax.php",
-    method: "POST",
-    data: datos, cache:false, contentType:false, processData:false, dataType:"json",
-    success: function(res){
-      if(res.ok){
-        const html = '<option value="">-- Selecciona curso --</option>' +
-          res.data.map(x=>`<option value="${x.id_curso}">${x.nombre}</option>`).join('');
-        $selCurso.html(html).prop('disabled',false);
-      }else{
-        $selCurso.prop('disabled',true).html('<option value="">-- Selecciona curso --</option>');
-        swal("Ups", res.msg || "No se pudo cargar cursos", "error");
-      }
-    }
-  });
-});
-
-/* ====== CREAR (id_responsable se toma en servidor) ====== */
-$("#formNuevaInscripcion").on("submit", function(e){
-  e.preventDefault();
-  const datos = new FormData(this);
-  datos.append("accion","crear");
-  $.ajax({
-    url:"ajax/inscripcion.ajax.php", method:"POST",
-    data:datos, cache:false, contentType:false, processData:false, dataType:"json",
-    success:function(r){
-      if(r.ok){
-        $('#modalAgregarInscripcion').modal('hide');
-        $('.tablaInscripcion').DataTable().ajax.reload(null,false);
-        swal("¡Guardado!","Inscripción registrada.","success");
-      }else{
-        swal("Error", r.msg || "No se pudo guardar", "error");
-      }
-    }
-  });
-});
-
-/* ====== ELIMINAR ====== */
-$(".tablaInscripcion tbody").on("click",".btnEliminarInscripcion", function(){
-  const id = $(this).attr("idInscripcion");
-  swal({
-    title:'¿Eliminar inscripción?', text:"Esta acción no se puede deshacer", type:'warning',
-    showCancelButton:true, confirmButtonColor:'#3085d6', cancelButtonColor:'#d33',
-    confirmButtonText:'Sí, eliminar', cancelButtonText:'Cancelar'
-  }).then(function(result){
-    if(result.value){
-      const fd = new FormData(); fd.append("accion","eliminar"); fd.append("id_inscripcion", id);
-      $.ajax({
-        url:"ajax/inscripcion.ajax.php", method:"POST",
-        data:fd, cache:false, contentType:false, processData:false, dataType:"json",
-        success:function(r){
-          if(r.ok){ $('.tablaInscripcion').DataTable().ajax.reload(null,false); swal("Eliminado","","success"); }
-          else { swal("Error", r.msg || "No se pudo eliminar", "error"); }
-        }
-      });
-    }
-  });
 });
