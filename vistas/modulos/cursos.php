@@ -57,33 +57,33 @@
           $valor = null;
 
           $cursos = ControladorCursos::ctrMostrarCursos($item, $valor);
-
+            
           foreach ($cursos as $key => $value) {
-           
+
             echo ' <tr>
-
                     <td>'.($key+1).'</td>
+                    <td class="text-uppercase">'.$value["curso"].'</td>';
 
-                    <td class="text-uppercase">'.$value["curso"].'</td>
+            // Obtener nombre de la carrera asociada
+            $itemCarrera = "id_carrera";
+            $valorCarrera = $value["id_carrera"];
+            $carrera = ControladorCarreras::ctrMostrarCarreras($itemCarrera, $valorCarrera);
 
-                    <td class="text-uppercase">'.$value["carrera"].'</td>
+            // Verificamos que no esté vacío
+            $nombreCarrera = $carrera ? $carrera["carrera"] : 'Sin carrera';
 
-                    <td>
-
-                      <div class="btn-group">
-                          
-                        <button class="btn btn-warning btnEditarCurso" idCurso="'.$value["id"].'" data-toggle="modal" data-target="#modalEditarCurso"><i class="fa fa-pencil"></i></button>
-
-                        <button class="btn btn-danger btnEliminarCurso" idCurso="'.$value["id"].'"><i class="fa fa-times"></i></button>
-
-                      </div>  
-
-                    </td>
-
-                  </tr>';
+            echo '<td class="text-uppercase">'.$nombreCarrera.'</td>
+                  <td>
+                    <div class="btn-group">
+                      <button class="btn btn-warning btnEditarCurso" idCurso="'.$value["id_curso"].'" data-toggle="modal" data-target="#modalEditarCurso"><i class="fa fa-pencil"></i></button>
+                      <button class="btn btn-danger btnEliminarCurso" idCurso="'.$value["id_curso"].'"><i class="fa fa-times"></i></button>
+                    </div>
+                  </td>
+                </tr>';
           }
 
         ?>
+
 
         </tbody>
 
@@ -137,8 +137,13 @@ MODAL AGREGAR CURSO
               
                 <span class="input-group-addon"><i class="fa fa-book"></i></span> 
 
-                <input type="text" class="form-control input-lg" name="nuevoCurso" placeholder="Ingresar curso" required>
-
+                <!--<input type="text" class="form-control input-lg" name="nuevoCurso" placeholder="Ingresar curso" required>-->
+                <select class="form-control input-lg" name="nuevoCurso" required>
+                  <option value="">Seleccionar Curso</option>
+                  <option value="primero">primero</option>
+                  <option value="segundo">segundo</option>
+                  <option value="tercero">tercero</option>
+                </select>
               </div>
 
             </div>
@@ -151,7 +156,7 @@ MODAL AGREGAR CURSO
               
                 <span class="input-group-addon"><i class="fa fa-graduation-cap"></i></span> 
 
-                <select class="form-control input-lg" name="nuevaCarrera" required>
+                <select class="form-control input-lg" name="nuevaCarrera" require >
                   
                   <option value="">Seleccionar carrera</option>
 
@@ -161,7 +166,7 @@ MODAL AGREGAR CURSO
 
                     foreach ($carreras as $key => $value) {
                       
-                      echo '<option value="'.$value["id"].'">'.$value["carrera"].'</option>';
+                      echo '<option value="'.$value["id_carrera"].'">'.$value["carrera"].'</option>';
                     }
 
                   ?>
@@ -208,109 +213,68 @@ MODAL EDITAR CURSO
 ======================================-->
 
 <div id="modalEditarCurso" class="modal fade" role="dialog">
-  
   <div class="modal-dialog">
-
     <div class="modal-content">
 
       <form role="form" method="post">
 
-        <!--=====================================
-        CABEZA DEL MODAL
-        ======================================-->
-
         <div class="modal-header" style="background:#3c8dbc; color:white">
-
           <button type="button" class="close" data-dismiss="modal">&times;</button>
-
           <h4 class="modal-title">Editar curso</h4>
-
         </div>
 
-        <!--=====================================
-        CUERPO DEL MODAL
-        ======================================-->
-
         <div class="modal-body">
-
           <div class="box-body">
 
             <!-- ENTRADA PARA EL NOMBRE DEL CURSO -->
-            
             <div class="form-group">
-              
               <div class="input-group">
-              
                 <span class="input-group-addon"><i class="fa fa-book"></i></span> 
-
-                <input type="text" class="form-control input-lg" name="editarCurso" id="editarCurso" required>
-
+                <select class="form-control input-lg" name="editarCurso" id="editarCurso" required>
+                  <option value="primero">primero</option>
+                  <option value="segundo">segundo</option>
+                  <option value="tercero">tercero</option>
+                </select>
               </div>
-
             </div>
 
             <!-- ENTRADA PARA SELECCIONAR CARRERA -->
-            
             <div class="form-group">
-              
               <div class="input-group">
-              
                 <span class="input-group-addon"><i class="fa fa-graduation-cap"></i></span> 
-
                 <select class="form-control input-lg" name="editarCarrera" id="editarCarrera" required>
-                  
-                  <option value="" id="carreraActual"></option>
+                <option value="" id="carreraActual"></option>
 
-                  <?php
-
-                    $carreras = ControladorCursos::ctrMostrarCarreras();
-
-                    foreach ($carreras as $key => $value) {
-                      
-                      echo '<option value="'.$value["id"].'">'.$value["carrera"].'</option>';
-                    }
-
-                  ?>
+                <?php
+                  $carreras = ControladorCursos::ctrMostrarCarreras();
+                  foreach ($carreras as $key => $value) {
+                    echo '<option value="'.$value["id_carrera"].'">'.$value["carrera"].'</option>';
+                  }
+                ?>
 
                 </select>
-
               </div>
-
             </div>
 
-            <!-- INPUT OCULTO PARA EL ID DEL CURSO -->
             <input type="hidden" name="idCurso" id="idCurso">
-  
           </div>
-
         </div>
-
-        <!--=====================================
-        PIE DEL MODAL
-        ======================================-->
 
         <div class="modal-footer">
-
           <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Salir</button>
-
           <button type="submit" class="btn btn-primary">Guardar cambios</button>
-
         </div>
 
-      <?php
-
+        <?php
           $editarCurso = new ControladorCursos();
-          $editarCurso -> ctrEditarCurso();
-
+          $editarCurso->ctrEditarCurso();
         ?> 
 
       </form>
-
     </div>
-
   </div>
-
 </div>
+
 
 <?php
 

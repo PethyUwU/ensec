@@ -24,6 +24,10 @@
            <tr>
              <th style="width:10px">#</th>
              <th>Nombre</th>
+             <th>Apellido Paterno</th>
+             <th>Apellido Materno</th>
+             <th>Celular</th>
+             <th>Gmail</th>
              <th>Usuario</th>
              <th>Foto</th>
              <th>Perfil</th>
@@ -41,6 +45,10 @@
               echo ' <tr>
                       <td>'.($key+1).'</td>
                       <td>'.$value["nombre"].'</td>
+                      <td>'.$value["apellidoP"].'</td>
+                      <td>'.$value["apellidoM"].'</td>
+                      <td>'.$value["celular"].'</td>
+                      <td>'.$value["gmail"].'</td>
                       <td>'.$value["usuario"].'</td>';
               if($value["foto"] != ""){
                 echo '<td><img src="'.$value["foto"].'" class="img-thumbnail" width="40px"></td>';

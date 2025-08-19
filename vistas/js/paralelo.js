@@ -15,10 +15,10 @@ $(".tablas").on("click", ".btnEditarParalelo", function() {
       dataType: "json",
       success: function(respuesta) {
         $("#editarParalelo").val(respuesta["paralelo"]);
-        $("#idParalelo").val(respuesta["id"]);
+        $("#idParalelo").val(respuesta["id_paralelo"]);
       }
     });
-  });
+  }); 
   
   // Eliminar Paralelo
   $(".tablas").on("click", ".btnEliminarParalelo", function() {

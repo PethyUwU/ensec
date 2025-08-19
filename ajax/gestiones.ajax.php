@@ -1,17 +1,34 @@
 <?php
 
 require_once "../controladores/gestiones.controlador.php";
+require_once "../modelos/gestiones.modelo.php";
 
-if(isset($_POST["gestion"])) {
-    ControladorGestiones::ctrCrearGestion();
+class AjaxGestiones{
+
+	/*=============================================
+	EDITAR GESTIÓN
+	=============================================*/	
+
+	public $idGestion;
+
+	public function ajaxEditarGestion(){
+
+		$item = "id_gestion";
+		$valor = $this->idGestion;
+
+		$respuesta = ControladorGestiones::ctrMostrarGestiones($item, $valor);
+
+		echo json_encode($respuesta);
+
+	}
 }
 
-if(isset($_GET["id_gestion"])) {
-    ControladorGestiones::ctrMostrarGestiones("id_gestion", $_GET["id_gestion"]);
-}
+/*=============================================
+EDITAR GESTIÓN
+=============================================*/	
+if(isset($_POST["idGestion"])){
 
-if(isset($_POST["id_gestion"])) {
-    ControladorGestiones::ctrEliminarGestion();
+	$gestion = new AjaxGestiones();
+	$gestion -> idGestion = $_POST["idGestion"];
+	$gestion -> ajaxEditarGestion();
 }
-
-?>

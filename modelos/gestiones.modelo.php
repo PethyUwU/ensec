@@ -2,84 +2,115 @@
 
 require_once "conexion.php";
 
-class ModeloGestiones {
+class ModeloGestiones{
 
-    /*=============================================
-    CREAR GESTIÓN
-    =============================================*/
+	/*=============================================
+	CREAR GESTIÓN
+	=============================================*/
 
-    static public function mdlIngresarGestion($tabla, $datos){
+	static public function mdlIngresarGestion($tabla, $datos){
+            
+		$stmt = Conexion::conectar()->prepare("INSERT INTO $tabla(gestion) VALUES (:gestion)");
 
-        $stmt = Conexion::conectar()->prepare("INSERT INTO $tabla(gestion) VALUES (:gestion)");
+		$stmt->bindParam(":gestion", $datos, PDO::PARAM_STR);
 
-        $stmt->bindParam(":gestion", $datos, PDO::PARAM_STR);
+		if($stmt->execute()){
 
-        if($stmt->execute()){
-            return "ok";
-        }else{
-            return "error";
-        }
+			return "ok";
 
-        $stmt = null;
-    }
+		}else{
 
-    /*=============================================
-    MOSTRAR GESTIONES
-    =============================================*/
+			return "error";
+		
+		}
 
-    static public function mdlMostrarGestiones($tabla, $item, $valor){
+		$stmt->close();
+		$stmt = null;
 
-        if($item != null){
-            $stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE $item = :$item");
-            $stmt->bindParam(":".$item, $valor, PDO::PARAM_STR);
-            $stmt->execute();
-            return $stmt->fetch();
-        }else{
-            $stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla");
-            $stmt->execute();
-            return $stmt->fetchAll();
-        }
+	}
 
-        $stmt = null;
-    }
+	/*=============================================
+	MOSTRAR GESTIONES
+	=============================================*/
 
-    /*=============================================
-    EDITAR GESTIÓN
-    =============================================*/
+	static public function mdlMostrarGestiones($tabla, $item, $valor){
 
-    static public function mdlEditarGestion($tabla, $datos){
-        
-        $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET gestion = :gestion WHERE id_gestion = :id_gestion");
+		if($item != null){
 
-        $stmt->bindParam(":gestion", $datos["gestion"], PDO::PARAM_STR);
-        $stmt->bindParam(":id_gestion", $datos["id_gestion"], PDO::PARAM_INT);
+			$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE $item = :$item");
 
-        if($stmt->execute()){
-            return "ok";
-        }else{
-            return "error";
-        }
+			$stmt -> bindParam(":".$item, $valor, PDO::PARAM_STR);
 
-        $stmt = null;
-    }
+			$stmt -> execute();
 
-    /*=============================================
-    ELIMINAR GESTIÓN
-    =============================================*/
+			return $stmt -> fetch();
 
-    static public function mdlEliminarGestion($tabla, $id_gestion){
-        
-        $stmt = Conexion::conectar()->prepare("DELETE FROM $tabla WHERE id_gestion = :id_gestion");
+		}else{
 
-        $stmt->bindParam(":id_gestion", $id_gestion, PDO::PARAM_INT);
+			$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla");
 
-        if($stmt->execute()){
-            return "ok";
-        }else{
-            return "error";
-        }
+			$stmt -> execute();
 
-        $stmt = null;
-    }
+			return $stmt -> fetchAll();
+
+		}
+
+		$stmt -> close();
+
+		$stmt = null;
+
+	}
+
+	/*=============================================
+	EDITAR GESTIÓN
+	=============================================*/
+
+	static public function mdlEditarGestion($tabla, $datos){
+
+		$stmt = Conexion::conectar()->prepare("UPDATE $tabla SET gestion = :gestion WHERE id_gestion = :id_gestion");
+
+		$stmt -> bindParam(":gestion", $datos["gestion"], PDO::PARAM_STR);
+		$stmt -> bindParam(":id_gestion", $datos["id_gestion"], PDO::PARAM_INT);
+
+		if($stmt->execute()){
+
+			return "ok";
+
+		}else{
+
+			return "error";
+		
+		}
+
+		$stmt->close();
+		$stmt = null;
+
+	}
+
+	/*=============================================
+	BORRAR GESTIÓN
+	=============================================*/
+
+	static public function mdlBorrarGestion($tabla, $datos){
+
+		$stmt = Conexion::conectar()->prepare("DELETE FROM $tabla WHERE id_gestion = :id_gestion");
+
+		$stmt -> bindParam(":id_gestion", $datos, PDO::PARAM_INT);
+
+		if($stmt -> execute()){
+
+			return "ok";
+		
+		}else{
+
+			return "error";	
+
+		}
+
+		$stmt -> close();
+
+		$stmt = null;
+
+	}
+
 }
-?>

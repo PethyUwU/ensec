@@ -1,73 +1,57 @@
-$(document).ready(function(){
-    // Cargar gestiones
-    function cargarGestiones() {
-        $.ajax({
-            url: "ajax/gestiones.ajax.php",
-            method: "GET",
-            success: function(respuesta) {
-                const gestiones = JSON.parse(respuesta);
-                let html = '';
-                gestiones.forEach(function(gestion) {
-                    html += `<tr>
-                                <td>${gestion.id_gestion}</td>
-                                <td>${gestion.gestion}</td>
-                                <td>
-                                    <button class="btn btn-info btnEditarGestion" data-toggle="modal" data-target="#modalEditarGestion" data-id="${gestion.id_gestion}">Editar</button>
-                                    <button class="btn btn-danger btnEliminarGestion" data-id="${gestion.id_gestion}">Eliminar</button>
-                                </td>
-                            </tr>`;
-                });
-                $("#tablaGestiones tbody").html(html);
-            }
-        });
-    }
+/*=============================================
+EDITAR GESTION
+=============================================*/
+$(".tablas").on("click", ".btnEditarGestion", function(){
 
-    // Crear gestión
-    $("#formGestion").submit(function(e){
-        e.preventDefault();
-        let gestion = $("#gestion").val();
-        $.ajax({
-            url: "ajax/gestiones.ajax.php",
-            method: "POST",
-            data: { gestion: gestion },
-            success: function(respuesta) {
-                if(respuesta == "ok") {
-                    cargarGestiones();
-                    $('#modalAgregarGestion').modal('hide');
-                }
-            }
-        });
-    });
+	var idGestion = $(this).attr("idGestion");
 
-    // Eliminar gestión
-    $(document).on("click", ".btnEliminarGestion", function(){
-        let id_gestion = $(this).data("id");
-        $.ajax({
-            url: "ajax/gestiones.ajax.php",
-            method: "POST",
-            data: { id_gestion: id_gestion },
-            success: function(respuesta) {
-                if(respuesta == "ok") {
-                    cargarGestiones();
-                }
-            }
-        });
-    });
+	var datos = new FormData();
+	datos.append("idGestion", idGestion);
 
-    // Editar gestión
-    $(document).on("click", ".btnEditarGestion", function(){
-        let id_gestion = $(this).data("id");
-        $.ajax({
-            url: "ajax/gestiones.ajax.php",
-            method: "GET",
-            data: { id_gestion: id_gestion },
-            success: function(respuesta) {
-                const gestion = JSON.parse(respuesta);
-                $("#gestion").val(gestion.gestion);
-            }
-        });
-    });
+	$.ajax({
+		url: "ajax/gestiones.ajax.php",
+		method: "POST",
+      	data: datos,
+      	cache: false,
+     	contentType: false,
+     	processData: false,
+     	dataType:"json",
+     	success: function(respuesta){
 
-    // Inicializar carga de gestiones
-    cargarGestiones();
-});
+     		$("#editarGestion").val(respuesta["gestion"]);
+     		$("#idGestion").val(respuesta["id_gestion"]);
+
+     	}
+
+	})
+
+})
+
+/*=============================================
+ELIMINAR GESTION
+=============================================*/
+$(".tablas").on("click", ".btnEliminarGestion", function(){
+
+	 var idGestion = $(this).attr("idGestion");
+
+	 swal({
+	 	title: '¿Está seguro de borrar la gestión?',
+	 	text: "¡Si no lo está puede cancelar la acción!",
+	 	type: 'warning',
+	 	showCancelButton: true,
+	 	confirmButtonColor: '#3085d6',
+	 	cancelButtonColor: '#d33',
+	 	cancelButtonText: 'Cancelar',
+	 	confirmButtonText: 'Si, borrar gestión!'
+	 }).then(function(result){
+
+	 	if(result.value){
+
+	 		window.location = "index.php?ruta=gestiones&idGestion="+idGestion;
+
+
+	 	}
+
+	 })
+
+})

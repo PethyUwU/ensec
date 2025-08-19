@@ -3,24 +3,19 @@
 require_once "../controladores/cursos.controlador.php";
 require_once "../modelos/cursos.modelo.php";
 
-class AjaxCursos{
+class AjaxCursos {
 
-	/*=============================================
-	EDITAR CURSO
-	=============================================*/	
+  public $idCurso;
 
-	public $idCurso;
+  public function ajaxEditarCurso(){
 
-	public function ajaxEditarCurso(){
+    $item = "id_curso";
+    $valor = $this->idCurso;
 
-		$item = "id";
-		$valor = $this->idCurso;
+    $respuesta = ControladorCursos::ctrMostrarCursos($item, $valor);
 
-		$respuesta = ControladorCursos::ctrMostrarCursos($item, $valor);
-
-		echo json_encode($respuesta);
-
-	}
+    echo json_encode($respuesta);
+  }
 }
 
 /*=============================================
@@ -28,7 +23,7 @@ EDITAR CURSO
 =============================================*/	
 if(isset($_POST["idCurso"])){
 
-	$curso = new AjaxCursos();
-	$curso -> idCurso = $_POST["idCurso"];
-	$curso -> ajaxEditarCurso();
+  $editar = new AjaxCursos();
+  $editar -> idCurso = $_POST["idCurso"];
+  $editar -> ajaxEditarCurso();
 }

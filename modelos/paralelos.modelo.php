@@ -17,7 +17,7 @@ class ParaleloModel {
       return $stmt->fetchAll();
     }
     $stmt->close();
-    $stmt = null;
+    $stmt = null; 
   }
 
   /*=============================================
@@ -40,9 +40,9 @@ class ParaleloModel {
   EDITAR PARALELO
   =============================================*/
   static public function mdlEditarParalelo($tabla, $datos) {
-    $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET paralelo = :paralelo WHERE id = :id");
+    $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET paralelo = :paralelo WHERE id_paralelo = :id_paralelo");
     $stmt->bindParam(":paralelo", $datos["paralelo"], PDO::PARAM_STR);
-    $stmt->bindParam(":id", $datos["id"], PDO::PARAM_INT);
+    $stmt->bindParam(":id_paralelo", $datos["id_paralelo"], PDO::PARAM_INT);
     
     if($stmt->execute()) {
       return "ok";

@@ -12845,7 +12845,7 @@ dl {
           font-family: "Open Sans", sans-serif;
           font-weight: 600; }
         .sidebar .nav .nav-item.active:not(.navbar-brand-mini-wrapper) > .nav-link i {
-          color: #38ce3c; }
+          color: #2323FF; }
       .sidebar .nav .nav-item:not(.nav-category):hover {
         background: #2c2c43; }
       .sidebar .nav .nav-item.nav-profile {
@@ -12905,7 +12905,7 @@ dl {
               transform: none;
               color: #626262; }
       .sidebar .nav .nav-item.nav-category {
-        color: #38ce3c;
+        color: #99A7FF;
         font-size: 13px;
         font-weight: 700;
         text-transform: uppercase; }

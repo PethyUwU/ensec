@@ -5,7 +5,7 @@ class ControladorParalelos {
   MOSTRAR PARALELOS
   =============================================*/
   static public function ctrMostrarParalelos($item, $valor) {
-    $tabla = "paralelo";
+    $tabla = "paralelos";
     $respuesta = ParaleloModel::mdlMostrarParalelos($tabla, $item, $valor);
     return $respuesta;
   }
@@ -16,7 +16,7 @@ class ControladorParalelos {
   public function ctrCrearParalelo() {
     if(isset($_POST["nuevoParalelo"])) {
       if(preg_match('/^[a-zA-Z0-9]+$/', $_POST["nuevoParalelo"])) {
-        $tabla = "paralelo";
+        $tabla = "paralelos";
         $datos = $_POST["nuevoParalelo"];
         
         $respuesta = ParaleloModel::mdlCrearParalelo($tabla, $datos);
@@ -51,17 +51,17 @@ class ControladorParalelos {
       }
     }
   }
-
+ 
   /*=============================================
   EDITAR PARALELO
   =============================================*/
   public function ctrEditarParalelo() {
     if(isset($_POST["editarParalelo"])) {
       if(preg_match('/^[a-zA-Z0-9]+$/', $_POST["editarParalelo"])) {
-        $tabla = "paralelo";
+        $tabla = "paralelos";
         $datos = array(
           "paralelo" => $_POST["editarParalelo"],
-          "id" => $_POST["idParalelo"]
+          "id_paralelo" => $_POST["idParalelo"]
         );
         
         $respuesta = ParaleloModel::mdlEditarParalelo($tabla, $datos);

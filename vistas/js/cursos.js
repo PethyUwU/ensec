@@ -1,41 +1,39 @@
 $(document).ready(function(){
-
+ 
     /*=============================================
     EDITAR CURSO
     =============================================*/
   
-    $(".btnEditarCurso").click(function(){
-  
-      var idCurso = $(this).attr("idCurso");
-      
-      var datos = new FormData();
-      datos.append("idCurso", idCurso);
-  
-      $.ajax({
-  
-        url: "ajax/cursos.ajax.php",
-        method: "POST",
-        data: datos,
-        cache: false,
-        contentType: false,
-        processData: false,
-        dataType: "json",
-        success: function(respuesta){
-  
-          $("#editarCurso").val(respuesta["curso"]);
-          $("#editarCarrera").val(respuesta["idCarrera"]);
-          $("#idCurso").val(respuesta["id"]);
-          
-          // Actualizar el texto de la opción seleccionada
-          $("#carreraActual").text(respuesta["carrera"]);
-          $("#carreraActual").val(respuesta["idCarrera"]);
-  
-        }
-  
-      });
-  
-    });
-  
+$(".btnEditarCurso").click(function(){
+
+  var idCurso = $(this).attr("idCurso");
+  var datos = new FormData();
+  datos.append("idCurso", idCurso);
+
+  $.ajax({
+    url: "ajax/cursos.ajax.php",
+    method: "POST",
+    data: datos,
+    cache: false,
+    contentType: false,
+    processData: false,
+    dataType: "json",
+    success: function(respuesta){
+
+      console.log(respuesta); // para debug
+
+      // Asigna valores en los campos
+      $("#editarCurso").val(respuesta["curso"]);
+      $("#idCurso").val(respuesta["id_curso"]);
+
+      $("#editarCarrera").val(respuesta["id_carrera"]);
+      $("#carreraActual").text(respuesta["carrera"]);
+      $("#carreraActual").val(respuesta["id_carrera"]);
+    }
+  });
+
+});
+
     /*=============================================
     ELIMINAR CURSO
     =============================================*/

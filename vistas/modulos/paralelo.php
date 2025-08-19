@@ -22,7 +22,7 @@
               <th style="width:10px">#</th>
               <th>Paralelo</th>
               <th>Acciones</th>
-            </tr>
+            </tr> 
           </thead>
           <tbody>
             <?php
@@ -36,8 +36,8 @@
                         <td class="text-uppercase">'.$value["paralelo"].'</td>
                         <td>
                           <div class="btn-group">
-                            <button class="btn btn-warning btnEditarParalelo" idParalelo="'.$value["id"].'" data-toggle="modal" data-target="#modalEditarParalelo"><i class="fa fa-pencil"></i></button>
-                            <button class="btn btn-danger btnEliminarParalelo" idParalelo="'.$value["id"].'"><i class="fa fa-times"></i></button>
+                            <button class="btn btn-warning btnEditarParalelo" idParalelo="'.$value["id_paralelo"].'" data-toggle="modal" data-target="#modalEditarParalelo"><i class="fa fa-pencil"></i></button>
+                            <button class="btn btn-danger btnEliminarParalelo" idParalelo="'.$value["id_paralelo"].'"><i class="fa fa-times"></i></button>
                           </div>
                         </td>
                       </tr>';
@@ -100,7 +100,7 @@
             <div class="form-group">
               <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-th"></i></span>
-                <input type="text" class="form-control input-lg" name="editarParalelo" id="editarParalelo" required>
+                <input type="text" class="form-control input-lg" name="editarParalelo" id="editarParalelo" required maxlength="1">
                 <input type="hidden" name="idParalelo" id="idParalelo" required>
               </div>
             </div>
